@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <title>Neon Drift</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">✦</span><span>NEON DRIFT</span></div>
+      <button id="trophyRoadButton" class="top-trophy-button" type="button" aria-label="Otvoriť Cestu trofejí"><span aria-hidden="true">🏆</span><strong id="hudTrophies">0</strong></button>
+      <nav class="main-nav" aria-label="Hlavné menu"><button data-menu="play" type="button">PLAY</button><button data-menu="brawlers" type="button">BRAWLERS</button><button data-menu="mapmaker" type="button">MAP MAKER</button><button data-menu="buffies" type="button">BAFÍCI</button><button data-menu="shop" type="button">SHOP</button><button data-menu="pass" type="button">PASS</button><button data-menu="quests" type="button">QUESTS</button><button data-menu="ranked" type="button">RANKED</button><button data-menu="friends" type="button">FRIENDS</button><button data-menu="club" type="button">CLUB</button><button data-menu="profile" type="button">PROFILE</button><button data-menu="settings" type="button">SETTINGS</button><button data-menu="news" type="button">NEWS</button></nav>
+      <div class="topbar-actions"><div class="topbar-status"><span class="status-dot"></span> SEKTOR 07 / ŽIVO</div><button id="panelToggle" class="panel-toggle" type="button" aria-expanded="false" aria-controls="sidePanel">SETTINGS</button></div>
+    </header>
+
+    <section class="game-layout">
+      <aside id="sidePanel" class="intro-panel" hidden>
+        <p class="eyebrow">PRIESKUMNÍK PRÁZDNOTY / 01</p>
+        <h1>Utekaj<br><em>alebo zmizni.</em></h1>
+        <p class="intro-copy">Veď svoj tím 3 na 3. Schovaj sa za blokmi, strieľaj presne a znič celý nepriateľský tím.</p>
+        <section class="brawler-hub" aria-label="Brawler hub">
+          <div class="hub-heading"><span class="eyebrow">BRAWLER HUB / KOLEKCIA</span><span id="totalTrophies" class="hub-trophies">0 TROFEJÍ</span></div>
+          <div id="brawlerProfile" class="brawler-profile"></div>
+          <div class="hub-tabs" role="tablist"><button class="hub-tab active" data-hub-tab="brawlers" type="button">BRAWLERI</button><button class="hub-tab" data-hub-tab="road" type="button">TROPHY ROAD</button><button class="hub-tab" data-hub-tab="events" type="button">EVENTY</button></div>
+          <div id="hubContent" class="hub-content"></div>
+          <div class="system-tabs" role="tablist" aria-label="Herné systémy"><button class="system-tab active" data-system-tab="modes" type="button">REŽIMY</button><button class="system-tab" data-system-tab="maps" type="button">MAPY</button><button class="system-tab" data-system-tab="profile" type="button">PROFIL</button><button class="system-tab" data-system-tab="friends" type="button">PRIATELIA</button><button class="system-tab" data-system-tab="club" type="button">KLUB</button><button class="system-tab" data-system-tab="rewards" type="button">ODM.</button><button class="system-tab" data-system-tab="buffies" type="button">BAFÍCI</button><button class="system-tab" data-system-tab="settings" type="button">SYSTÉM</button></div>
+          <div id="systemContent" class="system-content"></div>
+        </section>
+        <label class="player-name-field">TVOJE MENO<input id="playerNameInput" type="text" maxlength="12" placeholder="TY" autocomplete="nickname"></label>
+        <button id="settingsToggle" class="shop-toggle" type="button" aria-expanded="false">ROZŠÍRENÉ NASTAVENIA</button>
+        <section id="settingsPanel" class="settings-panel" hidden aria-label="Nastavenia hry">
+          <div class="shop-heading"><span class="eyebrow">SYSTÉM / NASTAVENIA</span></div>
+          <label>GRAFIKA<select id="qualitySetting"><option value="low">NÍZKA / FPS</option><option value="medium">STREDNÁ</option><option value="high">VYSOKÁ / EFEKTY</option><option value="auto">AUTO BENCHMARK</option></select></label>
+          <label>ROZLÍŠENIE<select id="resolutionSetting"><option value="auto">AUTO</option><option value="1">100 %</option><option value="0.8">80 %</option><option value="0.6">60 %</option></select></label>
+          <label>VEĽKOSŤ UI<input id="uiScaleSetting" type="range" min=".8" max="1.3" step=".05" value="1"></label>
+          <label>MYŠ / CITLIVOSŤ<input id="mouseSetting" type="range" min=".5" max="2" step=".1" value="1"></label>
+          <label>HLASITOSŤ<input id="volumeSetting" type="range" min="0" max="1" step=".05" value=".45"></label>
+          <div class="key-settings"><span>KLÁVESY</span><button data-bind="up" type="button">W</button><button data-bind="down" type="button">S</button><button data-bind="left" type="button">A</button><button data-bind="right" type="button">D</button><button data-bind="fire" type="button">SPACE</button></div>
+          <div class="save-settings"><button id="saveSlot1" type="button">ULOŽIŤ 1</button><button id="loadSlot1" type="button">NAČÍTAŤ 1</button><button id="saveSlot2" type="button">ULOŽIŤ 2</button><button id="loadSlot2" type="button">NAČÍTAŤ 2</button></div>
+          <div class="achievement-box"><span>ACHIEVEMENTY</span><div id="achievementList"></div></div>
+          <p id="settingsMessage" aria-live="polite"></p>
+        </section>
+        <div class="control-list">
+          <div><span class="key">ŠÍPKY / WASD</span><span>pohyb</span></div>
+          <div><span class="key">MYŠ</span><span>mierenie a streľba</span></div>
+          <div><span class="key">SPACE</span><span>streľba</span></div>
+        </div>
+        <p class="tip">Použi bloky ako krytie.<br>Zásah do hlavy spôsobí väčšie poškodenie.</p>
+        <button id="shopToggle" class="shop-toggle" type="button" aria-expanded="true">SKRYŤ OBCHOD</button>
+        <section class="shop-panel" id="shopPanel" aria-label="Obchod postáv">
+          <div class="shop-heading"><span class="eyebrow">DIELŇA / OBCHOD</span><span class="shop-balance">◆ <strong id="shopGems">0</strong></span></div>
+          <div id="characterPreview" class="character-preview"></div>
+          <div class="reward-codes"><span class="option-label">FREE REWARDS / KÓD</span><div class="code-row"><input id="rewardCode" type="text" maxlength="20" placeholder="ZADAJ KÓD" autocomplete="off"><button id="redeemCode" type="button">ZÍSKAŤ</button></div><p id="codeMessage" aria-live="polite"></p></div>
+          <div id="characterShop" class="character-shop"></div>
+          <p id="shopMessage" class="shop-message" aria-live="polite"></p>
+        </section>
+      </aside>
+
+      <section class="game-card" aria-label="Herná aréna">
+        <div class="hud">
+          <div class="hud-block"><span class="hud-label">SKÓRE</span><strong id="score">000000</strong></div>
+          <div class="hud-block combo-block"><span class="hud-label">TÍMY</span><strong id="combo">2v2</strong></div>
+          <div class="hud-block best-block"><span class="hud-label">REKORD</span><strong id="best">000000</strong></div>
+          <div class="energy-bar hud-health"><span>ŽIVOTY</span><div class="energy-track"><i id="energyFill"></i></div><strong id="energyValue">100 HP</strong></div>
+          <div class="wallet" aria-label="Peňaženka"><span>◆ <strong id="gems">0</strong></span><span>● <strong id="coins">0</strong></span></div>
+        </div>
+        <div class="match-status" id="matchStatus">ČAKÁ NA ZÁPAS</div>
+        <div class="arena-wrap">
+          <canvas id="gameCanvas" aria-label="Hra Neon Drift"></canvas>
+          <div class="arena-grid"></div>
+          <div class="scanline"></div>
+          <div class="football-hint" id="footballHint" hidden>PRÍĎ K LOPTE · E = KOPNIŤ · LOPTU NEZDVIHNEŠ</div>
+          <div class="screen-message" id="screenMessage">
+            <div class="message-kicker">BÚRKA ČAKÁ</div>
+            <h2>NEON<br><span>DRIFT</span></h2>
+            <button id="startButton" class="primary-button" type="button"><span>▶</span> SPUSTIŤ HRU</button>
+            <div class="match-options">
+              <div><span class="option-label">VEĽKOSŤ TÍMU</span><div class="option-buttons" id="modePicker"><button class="option-button" data-mode="solo" type="button">SÓLO / 1v1</button><button class="option-button active" data-mode="duo" type="button">DUO / 2v2</button><button class="option-button" data-mode="trio" type="button">TRIO / 3v3</button></div></div>
+              <div class="duel-picker" id="duelPicker" hidden><span class="option-label">PORADIE POSTÁV V DUELE</span><div class="duel-slots"><label>1 <select id="duelSlot1"></select></label><label>2 <select id="duelSlot2"></select></label><label>3 <select id="duelSlot3"></select></label></div></div>
+              <div><span class="option-label">MAPA / ŠPECIÁLNA HRA</span><div class="option-buttons" id="mapPicker"><button class="option-button active" data-map="neon" type="button">NEÓNOVÝ DVOR</button><button class="option-button" data-map="crossfire" type="button">PRESTRELKA</button><button class="option-button" data-map="ruins" type="button">RUINY</button><button class="option-button" data-map="moon" type="button">LUNÁRNE MESTO</button><button class="option-button" data-map="volcano" type="button">VULKANICKÁ ZÓNA</button><button class="option-button" data-map="circuit" type="button">NEÓNOVÝ OKRUH</button><button class="option-button" data-map="football" type="button">FUTBAL</button><button class="option-button" data-map="custom" type="button" disabled>VLASTNÁ MAPA</button><button class="option-button" data-map="random" type="button">NÁHODNÁ MAPA</button><button class="option-button" data-map="duel" type="button">DUEL / 3 POSTAVY</button></div></div>
+            </div>
+            <p id="matchHint">Vyber si mapu a znič druhý tím.</p>
+          </div>
+          <div class="game-over" id="gameOver" hidden>
+            <div class="message-kicker" id="resultKicker">SIGNÁL STRATENÝ</div>
+            <h2 id="resultTitle">ZÁPAS<br><span>SKONČIL</span></h2>
+            <div class="stardrop" id="stardrop" hidden><span>✦</span><strong>STARDROP</strong><b id="stardropRarity">OBYČAJNÝ</b><small id="stardropReward">ODMEŇA</small></div>
+            <p id="finalStats">Skóre 000000</p>
+            <button id="restartButton" class="primary-button" type="button"><span>↻</span> HRAŤ ZNOVA</button>
+            <button id="chooseGameButton" class="secondary-button" type="button">VYBRAŤ HRU</button>
+          </div>
+          <div class="combat-hud" aria-label="Bojové schopnosti"><div class="combat-stat"><span>AMMO</span><b id="ammoValue">3 / 3</b><i><em id="ammoFill"></em></i></div><div class="combat-stat"><span>SUPER</span><b id="superValue">0%</b><i><em id="superFill"></em></i></div><button id="gadgetButton" class="combat-button" type="button">GADGET <b>Q</b></button><button id="hyperButton" class="combat-button hyper" type="button">HYPER <b>F</b></button></div>
+          <div id="mobileJoystick" class="mobile-joystick" aria-label="Joystick"><span></span></div>
+        </div>
+        <div class="arena-footer"><span><i class="live-dot"></i> ZÁZNAM</span><span id="waveLabel">ZÁPAS</span><span id="timeLabel">00:00</span></div>
+      </section>
+    </section>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
