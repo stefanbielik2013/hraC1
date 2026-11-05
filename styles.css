@@ -130,6 +130,29 @@ h1 em { color: var(--cyan); font-style: normal; }
 .profile-banner { border: 1px solid rgba(255,133,82,.35); padding: 9px; background: linear-gradient(135deg, rgba(255,133,82,.1), rgba(111,255,233,.05)); }
 .profile-banner strong { display: block; color: var(--paper); font: 800 20px 'Barlow Condensed', sans-serif; text-transform: uppercase; }
 .profile-banner small { color: var(--muted); font-size: 7px; }
+.account-panel { display: grid; gap: 7px; margin-top: 8px; padding: 9px; border: 1px solid rgba(111,255,233,.27); background: linear-gradient(145deg, rgba(111,255,233,.055), rgba(7,17,31,.6)); }
+.account-heading, .account-session { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.account-heading .eyebrow { margin: 0; font-size: 8px; }
+.account-heading > strong { color: var(--cyan); font-size: 17px; }
+.account-status, .account-privacy, .account-unconfigured { margin: 0; color: #b6c4c6; font-size: 8px; line-height: 1.6; overflow-wrap: anywhere; }
+.account-session { flex-wrap: wrap; padding: 7px; border: 1px solid rgba(111,255,233,.2); font-size: 8px; }
+.account-session > strong, .account-sync-ready { color: var(--cyan); }
+.account-session > span { min-width: 0; overflow-wrap: anywhere; }
+.account-sync-ready { margin: 0; font-size: 8px; }
+.account-sync-actions, .account-auth-actions { display: grid; gap: 5px; }
+.account-auth-form, .account-config form { display: grid; gap: 7px; }
+.account-auth-form label, .account-config label { display: grid; gap: 4px; color: var(--yellow); font-size: 8px; }
+.account-auth-form input, .account-config input { min-width: 0; width: 100%; padding: 8px; border: 1px solid rgba(111,255,233,.3); color: var(--paper); background: rgba(7,17,31,.9); font: 8px 'Space Mono', monospace; }
+.account-config { border-top: 1px solid var(--line); padding-top: 7px; }
+.account-config summary { color: var(--yellow); cursor: pointer; font-size: 8px; }
+.account-config p, .account-config ol { color: #aab5b8; font-size: 7px; line-height: 1.65; }
+.account-config ol { padding-left: 18px; }
+.account-config code { color: var(--cyan); overflow-wrap: anywhere; }
+.account-config a, .account-reset { color: var(--cyan); font: 700 7px 'Space Mono', monospace; text-decoration: underline; }
+.account-config form { margin-top: 8px; }
+.account-privacy { color: var(--muted); font-size: 7px; }
+.account-reset { justify-self: start; padding: 3px 0; border: 0; background: transparent; cursor: pointer; }
+.account-reset:hover { color: var(--yellow); }
 .system-list { display: grid; gap: 4px; }
 .system-list .system-card { display: flex; justify-content: space-between; align-items: center; }
 .social-list { display: grid; gap: 4px; max-height: 260px; overflow-y: auto; margin-top: 6px; }

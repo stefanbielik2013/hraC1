@@ -29,8 +29,9 @@ jobs:
           enablement: true
       - name: Prepare site files
         run: |
-          mkdir dist
-          cp index.html game.js styles.css dist/
+          mkdir -p dist/supabase
+          cp index.html game.js account.js styles.css dist/
+          cp supabase/schema.sql dist/supabase/
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:

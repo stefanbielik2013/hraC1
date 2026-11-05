@@ -91,6 +91,13 @@
   const friendsKey = 'neon-drift-friends';
   const clubsKey = 'neon-drift-clubs';
   const joinedClubKey = 'neon-drift-joined-club';
+  const accountDataKeys = [
+    bestKey, gemsKey, coinsKey, selectedCharacterKey, ownedCharactersKey, characterUpgradesKey,
+    equippedSkinsKey, redeemedCodesKey, selectedModeKey, selectedMapKey, customMapDataKey,
+    customMapLibraryKey, activeCustomMapKey, playerNameKey, settingsKey, achievementsKey,
+    trophiesKey, masteryKey, claimedQuestsKey, rankedKey, friendsKey, clubsKey, joinedClubKey,
+    'neon-drift-save-1', 'neon-drift-save-2'
+  ];
 
   let width = 0, height = 0, worldWidth = 0, worldHeight = 0, dpr = 1, animationId = 0, lastTime = 0, viewRotation = 0;
   let state = 'ready', score = 0, energy = 100, combo = 1, comboTimer = 0, elapsed = 0, spawnTimer = 0, shardTimer = 0;
@@ -140,7 +147,7 @@
   let rankedOpponentMmr = 1000;
   let player, allies = [], enemies = [], bullets = [], shards = [], particles = [], coverBlocks = [], keys = new Set(), pointer = null, firing = false;
   let rebinding = null;
-  const storage = { get(key, fallback = 0) { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } }, set(key, value) { try { localStorage.setItem(key, value); } catch { /* Hra funguje aj bez trvalého uloženia. */ } }, remove(key) { try { localStorage.removeItem(key); } catch { /* Hra funguje aj bez trvalého uloženia. */ } } };
+  const storage = { get(key, fallback = 0) { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } }, set(key, value) { try { localStorage.setItem(key, value); } catch { /* Hra funguje aj bez trvalého uloženia. */ } window.NeonDriftAccount?.scheduleSync(); }, remove(key) { try { localStorage.removeItem(key); } catch { /* Hra funguje aj bez trvalého uloženia. */ } window.NeonDriftAccount?.scheduleSync(); } };
   const formatScore = value => Math.floor(value).toString().padStart(6, '0');
   let best = Number(storage.get(bestKey));
   gems = Number(storage.get(gemsKey));
@@ -410,6 +417,7 @@
     if (tab === 'profile') systemContent.innerHTML = `<div class="profile-banner"><strong>${escapeHtml(playerName)}</strong><small>PLAYER TAG #NEON07 / PROFIL 01 / SEKTOR 07</small></div><div class="system-grid" style="margin-top:5px"><div class="system-card"><strong>${characters.length}</strong>Brawleri v kolekcii</div><div class="system-card"><strong>${characters.filter(character => ownedCharacters.includes(character.id)).length}</strong>Odomknutí</div><div class="system-card"><strong>${totalTrophiesEl.textContent}</strong>Celkové trofeje</div><div class="system-card"><strong>${Object.keys(achievements).length}</strong>Achievementy</div></div><div class="system-card" style="margin-top:5px">PRIATELIA: ${friends.length} / KLUB: ${clubs.find(club => club.id === joinedClubId)?.name || 'ZATIAĽ ŽIADNY'}<br><b>BOTOV MÔŽEŠ PRIDAŤ V SEKCIÁCH PRIATELIA A KLUB.</b></div>`;
     if (tab === 'rewards') systemContent.innerHTML = `<div class="system-list"><div class="system-card"><span><strong>BRAWL PASS</strong><small>Sezóna Neon Rising / level 12</small></span><button class="hub-action" data-reward="pass" type="button">+25 COINOV</button></div><div class="system-card"><span><strong>DENNÁ ODMENA</strong><small>Streak 3 / ďalší deň</small></span><button class="hub-action" data-reward="daily" type="button">ZÍSKAŤ</button></div><div class="system-card"><span><strong>KOZMETIKA</strong><small>Pins / sprays / player icons / titles</small></span><b>6 ODOMKNUTÝCH</b></div></div>`;
     if (tab === 'settings') systemContent.innerHTML = `<div class="system-grid"><div class="system-card"><strong>GRAFIKA / FPS</strong>Quality, resolution, UI scale.<button class="hub-action" data-system-action="settings" type="button">OTVORIŤ</button></div><div class="system-card"><strong>ZVUK / HUDBA</strong>Volume and effects.</div><div class="system-card"><strong>OVLÁDANIE</strong>WASD / myš / gamepad.</div><div class="system-card"><strong>ÚČET / PRIVACY</strong>Player tag / report / block.</div><div class="system-card"><strong>SEZÓNY / PATCH NOTES</strong>Balance changes / nové mapy.</div><div class="system-card"><strong>RANKED / LEADERBOARDS</strong>Rank 1 / 0 umiestnení.</div></div>`;
+    if (tab === 'profile') window.NeonDriftAccount?.render(systemContent);
     systemContent.querySelectorAll('[data-quick-map]').forEach(button => button.addEventListener('click', () => { chooseMap(button.dataset.quickMap); matchHint.textContent = `VYBRANÉ: ${getMapName()}.`; setPanelVisible(false); }));
     systemContent.querySelector('[data-open-mapmaker]')?.addEventListener('click', () => openMenuSection('mapmaker'));
     systemContent.querySelectorAll('[data-knockout]').forEach(button => button.addEventListener('click', () => startKnockout(button.dataset.knockout)));
@@ -1935,4 +1943,5 @@
   document.getElementById('saveSlot1').addEventListener('click', () => saveSlot(1)); document.getElementById('loadSlot1').addEventListener('click', () => loadSlot(1)); document.getElementById('saveSlot2').addEventListener('click', () => saveSlot(2)); document.getElementById('loadSlot2').addEventListener('click', () => loadSlot(2));
   ensureSocialData(); trophyRoadReward(); updateKeyButtons(); applySettings();
   renderShop(); renderMatchOptions(); resize(); reset(); draw();
+  window.NeonDriftAccount?.initialize(accountDataKeys);
 })();

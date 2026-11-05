@@ -29,7 +29,7 @@
           <div id="brawlerProfile" class="brawler-profile"></div>
           <div class="hub-tabs" role="tablist"><button class="hub-tab active" data-hub-tab="brawlers" type="button">BRAWLERI</button><button class="hub-tab" data-hub-tab="road" type="button">TROPHY ROAD</button><button class="hub-tab" data-hub-tab="events" type="button">EVENTY</button></div>
           <div id="hubContent" class="hub-content"></div>
-          <div class="system-tabs" role="tablist" aria-label="Herné systémy"><button class="system-tab active" data-system-tab="modes" type="button">REŽIMY</button><button class="system-tab" data-system-tab="maps" type="button">MAPY</button><button class="system-tab" data-system-tab="profile" type="button">PROFIL</button><button class="system-tab" data-system-tab="friends" type="button">PRIATELIA</button><button class="system-tab" data-system-tab="club" type="button">KLUB</button><button class="system-tab" data-system-tab="rewards" type="button">ODM.</button><button class="system-tab" data-system-tab="buffies" type="button">BAFÍCI</button><button class="system-tab" data-system-tab="settings" type="button">SYSTÉM</button></div>
+          <div class="system-tabs" role="tablist" aria-label="Herné systémy"><button class="system-tab active" data-system-tab="modes" type="button">REŽIMY</button><button class="system-tab" data-system-tab="maps" type="button">MAPY</button><button class="system-tab" data-system-tab="profile" type="button">MOJE KONTO</button><button class="system-tab" data-system-tab="friends" type="button">PRIATELIA</button><button class="system-tab" data-system-tab="club" type="button">KLUB</button><button class="system-tab" data-system-tab="rewards" type="button">ODM.</button><button class="system-tab" data-system-tab="buffies" type="button">BAFÍCI</button><button class="system-tab" data-system-tab="settings" type="button">SYSTÉM</button></div>
           <div id="systemContent" class="system-content"></div>
         </section>
         <label class="player-name-field">TVOJE MENO<input id="playerNameInput" type="text" maxlength="12" placeholder="TY" autocomplete="nickname"></label>
@@ -102,6 +102,8 @@
       </section>
     </section>
   </main>
-  <script src="game.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js"></script>
+  <script defer src="account.js"></script>
+  <script defer src="game.js"></script>
 </body>
 </html>
