@@ -82,6 +82,9 @@
   const mapEditorColumns = 20;
   const mapEditorRows = 16;
   const playerNameKey = 'neon-drift-player-name';
+  const vipUnlockedKey = 'neon-drift-vip-unlocked';
+  const playerIconKey = 'neon-drift-player-icon';
+  const playerIconOptions = ['👑', '⭐', '⚡', '🔥', '💎', '🎮', '🐉', '🌟'];
   const settingsKey = 'neon-drift-settings';
   const achievementsKey = 'neon-drift-achievements';
   const trophiesKey = 'neon-drift-trophies';
@@ -96,6 +99,7 @@
     equippedSkinsKey, redeemedCodesKey, selectedModeKey, selectedMapKey, customMapDataKey,
     customMapLibraryKey, activeCustomMapKey, playerNameKey, settingsKey, achievementsKey,
     trophiesKey, masteryKey, claimedQuestsKey, rankedKey, friendsKey, clubsKey, joinedClubKey,
+    vipUnlockedKey, playerIconKey,
     'neon-drift-save-1', 'neon-drift-save-2'
   ];
 
@@ -107,6 +111,8 @@
   let selectedMode = 'duo', selectedMap = 'neon';
   let showdownActive = false, showdownRadius = 0, powerCubes = [];
   let playerName = 'TY';
+  let vipUnlocked = false;
+  let playerIcon = playerIconOptions[0];
   let settings = { quality: 'auto', resolution: 'auto', uiScale: 1, mouseSensitivity: 1, volume: .45, bindings: { up: 'w', down: 's', left: 'a', right: 'd', fire: ' ' } };
   let achievements = {};
   let audioContext = null;
@@ -208,6 +214,9 @@
     showdownActive = customMapMode === 'showdown' && selectedMap === 'custom';
   }
   playerName = storage.get(playerNameKey, 'TY').toString().trim().slice(0, 12) || 'TY';
+  vipUnlocked = storage.get(vipUnlockedKey, 'false') === 'true';
+  const savedPlayerIcon = storage.get(playerIconKey, playerIconOptions[0]);
+  playerIcon = playerIconOptions.includes(savedPlayerIcon) ? savedPlayerIcon : playerIconOptions[0];
   playerNameInput.value = playerName;
   try { settings = { ...settings, ...JSON.parse(storage.get(settingsKey, '{}')), bindings: { ...settings.bindings, ...(JSON.parse(storage.get(settingsKey, '{}')).bindings || {}) } }; } catch { /* Použijú sa predvolené nastavenia. */ }
   try { ownedCharacters = JSON.parse(storage.get(ownedCharactersKey, '["rookie"]')); } catch { ownedCharacters = ['rookie']; }
@@ -414,10 +423,17 @@
     if (tab === 'club') { renderClubHub(); return; }
     if (tab === 'modes') systemContent.innerHTML = `<div class="system-grid"><div class="system-card"><strong>GEM GRAB</strong>3v3 / zbieraj kryštály.<button class="hub-action" data-quick-map="neon" type="button">HRAŤ</button></div><div class="system-card"><strong>BRAWL BALL</strong>3v3 / skóruj góly.<button class="hub-action" data-quick-map="football" type="button">HRAŤ</button></div><div class="system-card"><strong>SHOWDOWN</strong>Solo / Power Cubes / safe zone.<button class="hub-action" data-showdown="solo" type="button">SOLO</button></div><div class="system-card"><strong>DUO SHOWDOWN</strong>Team po dvoch / oživenie.<button class="hub-action" data-showdown="duo" type="button">DUO</button></div><div class="system-card"><strong>KNOCKOUT</strong>Bez respawnu / séria na 2 víťazné kolá.</div><div class="system-card"><strong>HEIST / BOUNTY</strong>Eventové pravidlá / odmeny.</div><div class="system-card"><strong>HOT ZONE</strong>Kontroluj zónu.</div><div class="system-card"><strong>LIMITED EVENT</strong>Neónová búrka / 2× trofeje.</div></div><div class="knockout-launch"><div><span class="eyebrow">KNOCKOUT / BEST OF 3</span><strong>Bez možnosti oživenia. Vyraď celý tím súpera a vyhraj dve kolá.</strong></div><button class="hub-action" data-knockout="solo" type="button">SOLO</button><button class="hub-action" data-knockout="duo" type="button">DUO</button></div>`;
     if (tab === 'maps') systemContent.innerHTML = `<div class="system-grid"><div class="system-card"><strong>NEÓNOVÝ DVOR</strong><b>Oficiálna mapa</b><br>kov, kryštály, krytie.<button class="hub-action" data-quick-map="neon" type="button">VYBRAŤ</button></div><div class="system-card"><strong>PRESTRELKA</strong><b>Oficiálna mapa</b><br>dlhé steny, stĺpy.<button class="hub-action" data-quick-map="crossfire" type="button">VYBRAŤ</button></div><div class="system-card"><strong>RUINY</strong><b>Vlastné prostredie</b><br>stĺpy, kryštály, úzke chodby.<button class="hub-action" data-quick-map="ruins" type="button">VYBRAŤ</button></div><div class="system-card"><strong>LUNÁRNE MESTO</strong><b>Nová mapa</b><br>mesačné kryštály a veže.<button class="hub-action" data-quick-map="moon" type="button">VYBRAŤ</button></div><div class="system-card"><strong>VULKANICKÁ ZÓNA</strong><b>Nová mapa</b><br>červené lávové svetlo.<button class="hub-action" data-quick-map="volcano" type="button">VYBRAŤ</button></div><div class="system-card"><strong>NEÓNOVÝ OKRUH</strong><b>Nová mapa</b><br>technické bloky a lúče.<button class="hub-action" data-quick-map="circuit" type="button">VYBRAŤ</button></div><div class="system-card"><strong>MAP MAKER</strong><b>VÝTVORCA</b><br>Navrhni, ulož a otestuj vlastnú mapu.<button class="hub-action" data-open-mapmaker type="button">TVORIŤ MAPU</button></div>${hasCustomMap ? '<div class="system-card"><strong>MOJA MAPA</strong><b>ULOŽENÁ</b><br>Vlastný návrh pripravený na hranie.<button class="hub-action" data-quick-map="custom" type="button">VYBRAŤ</button></div>' : ''}</div>`;
-    if (tab === 'profile') systemContent.innerHTML = `<div class="profile-banner"><strong>${escapeHtml(playerName)}</strong><small>PLAYER TAG #NEON07 / PROFIL 01 / SEKTOR 07</small></div><div class="system-grid" style="margin-top:5px"><div class="system-card"><strong>${characters.length}</strong>Brawleri v kolekcii</div><div class="system-card"><strong>${characters.filter(character => ownedCharacters.includes(character.id)).length}</strong>Odomknutí</div><div class="system-card"><strong>${totalTrophiesEl.textContent}</strong>Celkové trofeje</div><div class="system-card"><strong>${Object.keys(achievements).length}</strong>Achievementy</div></div><div class="system-card" style="margin-top:5px">PRIATELIA: ${friends.length} / KLUB: ${clubs.find(club => club.id === joinedClubId)?.name || 'ZATIAĽ ŽIADNY'}<br><b>BOTOV MÔŽEŠ PRIDAŤ V SEKCIÁCH PRIATELIA A KLUB.</b></div>`;
+    if (tab === 'profile') systemContent.innerHTML = `<div class="profile-banner"><span class="player-avatar ${vipUnlocked ? 'player-avatar-vip' : ''}" aria-label="${vipUnlocked ? 'VIP ikona' : 'Ikona hráča'}">${playerIcon}</span><span class="profile-name"><strong>${escapeHtml(playerName)}</strong><small>PLAYER TAG #NEON07 / PROFIL 01 / SEKTOR 07</small></span>${vipUnlocked ? '<b class="vip-label">VIP</b>' : ''}</div>${vipUnlocked ? `<section class="vip-icon-picker"><strong>VYBER SI SVOJU VIP IKONU</strong><div class="vip-icon-options" role="group" aria-label="Výber VIP ikony">${playerIconOptions.map(icon => `<button class="vip-icon-option ${icon === playerIcon ? 'active' : ''}" type="button" data-player-icon="${icon}" aria-label="Použiť ikonu ${icon}" aria-pressed="${icon === playerIcon}">${icon}</button>`).join('')}</div></section>` : '<div class="system-card vip-locked">VIP IKONU odomkneš kódom <strong>8798</strong> v obchode.</div>'}<div class="system-grid" style="margin-top:5px"><div class="system-card"><strong>${characters.length}</strong>Brawleri v kolekcii</div><div class="system-card"><strong>${characters.filter(character => ownedCharacters.includes(character.id)).length}</strong>Odomknutí</div><div class="system-card"><strong>${totalTrophiesEl.textContent}</strong>Celkové trofeje</div><div class="system-card"><strong>${Object.keys(achievements).length}</strong>Achievementy</div></div><div class="system-card" style="margin-top:5px">PRIATELIA: ${friends.length} / KLUB: ${clubs.find(club => club.id === joinedClubId)?.name || 'ZATIAĽ ŽIADNY'}<br><b>BOTOV MÔŽEŠ PRIDAŤ V SEKCIÁCH PRIATELIA A KLUB.</b></div>`;
     if (tab === 'rewards') systemContent.innerHTML = `<div class="system-list"><div class="system-card"><span><strong>BRAWL PASS</strong><small>Sezóna Neon Rising / level 12</small></span><button class="hub-action" data-reward="pass" type="button">+25 COINOV</button></div><div class="system-card"><span><strong>DENNÁ ODMENA</strong><small>Streak 3 / ďalší deň</small></span><button class="hub-action" data-reward="daily" type="button">ZÍSKAŤ</button></div><div class="system-card"><span><strong>KOZMETIKA</strong><small>Pins / sprays / player icons / titles</small></span><b>6 ODOMKNUTÝCH</b></div></div>`;
     if (tab === 'settings') systemContent.innerHTML = `<div class="system-grid"><div class="system-card"><strong>GRAFIKA / FPS</strong>Quality, resolution, UI scale.<button class="hub-action" data-system-action="settings" type="button">OTVORIŤ</button></div><div class="system-card"><strong>ZVUK / HUDBA</strong>Volume and effects.</div><div class="system-card"><strong>OVLÁDANIE</strong>WASD / myš / gamepad.</div><div class="system-card"><strong>ÚČET / PRIVACY</strong>Player tag / report / block.</div><div class="system-card"><strong>SEZÓNY / PATCH NOTES</strong>Balance changes / nové mapy.</div><div class="system-card"><strong>RANKED / LEADERBOARDS</strong>Rank 1 / 0 umiestnení.</div></div>`;
     if (tab === 'profile') window.NeonDriftAccount?.render(systemContent);
+    systemContent.querySelectorAll('[data-player-icon]').forEach(button => button.addEventListener('click', () => {
+      const icon = button.dataset.playerIcon;
+      if (!vipUnlocked || !playerIconOptions.includes(icon)) return;
+      playerIcon = icon;
+      storage.set(playerIconKey, playerIcon);
+      renderSystemHub('profile');
+    }));
     systemContent.querySelectorAll('[data-quick-map]').forEach(button => button.addEventListener('click', () => { chooseMap(button.dataset.quickMap); matchHint.textContent = `VYBRANÉ: ${getMapName()}.`; setPanelVisible(false); }));
     systemContent.querySelector('[data-open-mapmaker]')?.addEventListener('click', () => openMenuSection('mapmaker'));
     systemContent.querySelectorAll('[data-knockout]').forEach(button => button.addEventListener('click', () => startKnockout(button.dataset.knockout)));
@@ -855,6 +871,16 @@
     const code = rewardCode.value.trim().toUpperCase();
     const rewards = { DRIFT2026: { coins: 100, gems: 2, text: '+100 coinov a +2 drahokamy' }, NINJA: { coins: 40, gems: 1, text: '+40 coinov a +1 drahokam' }, GOAL: { coins: 180, gems: 0, text: '+180 coinov' } };
     if (!code) { codeMessage.textContent = 'Najprv zadaj kód.'; return; }
+    if (code === '8798') {
+      if (vipUnlocked || redeemedCodes.includes(code)) { codeMessage.textContent = 'VIP ikona už je odomknutá.'; return; }
+      vipUnlocked = true;
+      redeemedCodes.push(code);
+      storage.set(vipUnlockedKey, 'true');
+      storage.set(redeemedCodesKey, JSON.stringify(redeemedCodes));
+      rewardCode.value = '';
+      codeMessage.textContent = 'VIP ODOMKNUTÉ! Vyber si ikonu v PROFILE → MOJE KONTO.';
+      return;
+    }
     if (!rewards[code]) { codeMessage.textContent = 'Tento kód nepoznám.'; return; }
     if (redeemedCodes.includes(code)) { codeMessage.textContent = 'Tento kód už bol použitý.'; return; }
     const reward = rewards[code]; coins += reward.coins; gems += reward.gems; redeemedCodes.push(code); storage.set(coinsKey, coins); storage.set(gemsKey, gems); storage.set(redeemedCodesKey, JSON.stringify(redeemedCodes)); coinsEl.textContent = coins; gemsEl.textContent = gems; shopGemsEl.textContent = gems; rewardCode.value = ''; codeMessage.textContent = `ODMENA ZÍSKANÁ: ${reward.text}`;
