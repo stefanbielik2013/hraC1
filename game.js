@@ -86,6 +86,7 @@
   const playerIconKey = 'neon-drift-player-icon';
   const vipShowTrophiesKey = 'neon-drift-vip-show-trophies';
   const vipShowRankedKey = 'neon-drift-vip-show-ranked';
+  const vipDisplayedTrophiesKey = 'neon-drift-vip-displayed-trophies';
   const playerIconOptions = ['👑', '⭐', '⚡', '🔥', '💎', '🎮', '🐉', '🌟'];
   const settingsKey = 'neon-drift-settings';
   const achievementsKey = 'neon-drift-achievements';
@@ -101,7 +102,7 @@
     equippedSkinsKey, redeemedCodesKey, selectedModeKey, selectedMapKey, customMapDataKey,
     customMapLibraryKey, activeCustomMapKey, playerNameKey, settingsKey, achievementsKey,
     trophiesKey, masteryKey, claimedQuestsKey, rankedKey, friendsKey, clubsKey, joinedClubKey,
-    vipUnlockedKey, playerIconKey, vipShowTrophiesKey, vipShowRankedKey,
+    vipUnlockedKey, playerIconKey, vipShowTrophiesKey, vipShowRankedKey, vipDisplayedTrophiesKey,
     'neon-drift-save-1', 'neon-drift-save-2'
   ];
 
@@ -117,6 +118,7 @@
   let playerIcon = playerIconOptions[0];
   let vipShowTrophies = false;
   let vipShowRanked = false;
+  let vipDisplayedTrophies = null;
   let settings = { quality: 'auto', resolution: 'auto', uiScale: 1, mouseSensitivity: 1, volume: .45, bindings: { up: 'w', down: 's', left: 'a', right: 'd', fire: ' ' } };
   let achievements = {};
   let audioContext = null;
@@ -223,6 +225,8 @@
   playerIcon = playerIconOptions.includes(savedPlayerIcon) ? savedPlayerIcon : playerIconOptions[0];
   vipShowTrophies = storage.get(vipShowTrophiesKey, 'false') === 'true';
   vipShowRanked = storage.get(vipShowRankedKey, 'false') === 'true';
+  const savedVipTrophies = storage.get(vipDisplayedTrophiesKey, '');
+  if (/^\d{1,6}$/.test(savedVipTrophies)) vipDisplayedTrophies = Number(savedVipTrophies);
   playerNameInput.value = playerName;
   try { settings = { ...settings, ...JSON.parse(storage.get(settingsKey, '{}')), bindings: { ...settings.bindings, ...(JSON.parse(storage.get(settingsKey, '{}')).bindings || {}) } }; } catch { /* Použijú sa predvolené nastavenia. */ }
   try { ownedCharacters = JSON.parse(storage.get(ownedCharactersKey, '["rookie"]')); } catch { ownedCharacters = ['rookie']; }
@@ -421,11 +425,11 @@
   }
   function renderVipProfileOptions() {
     const displayedStats = [
-      vipShowTrophies ? `<span class="vip-stat">🏆 ${totalTrophyCount().toLocaleString('sk-SK')} TROFEJÍ</span>` : '',
+      vipShowTrophies ? `<span class="vip-stat">🏆 ${(vipDisplayedTrophies ?? totalTrophyCount()).toLocaleString('sk-SK')} TROFEJÍ</span>` : '',
       vipShowRanked ? `<span class="vip-stat">RANKED / ${rankedTier(rankedState.points)}</span>` : ''
     ].filter(Boolean).join('');
     if (!vipUnlocked) return '';
-    return `<section class="vip-profile-options"><strong>VYBER, ČO SA ZOBRAZÍ PRI TVOJEJ VIP IKONE</strong><div class="vip-profile-toggles"><button class="vip-profile-toggle ${vipShowTrophies ? 'active' : ''}" type="button" data-vip-stat="trophies" aria-pressed="${vipShowTrophies}">🏆 TROFEJE</button><button class="vip-profile-toggle ${vipShowRanked ? 'active' : ''}" type="button" data-vip-stat="ranked" aria-pressed="${vipShowRanked}">RANKED</button></div><div class="vip-stat-preview">${displayedStats || '<span class="vip-stat-empty">ŽIADNE ÚDAJE NEZOBRAZUJEŠ</span>'}</div><p>Toto nastavenie platí pre tvoj profil. Hra zatiaľ nemá verejné profily, takže ho ostatní hráči nevidia.</p></section>`;
+    return `<section class="vip-profile-options"><strong>VYBER, ČO SA ZOBRAZÍ PRI TVOJEJ VIP IKONE</strong><div class="vip-profile-toggles"><button class="vip-profile-toggle ${vipShowTrophies ? 'active' : ''}" type="button" data-vip-stat="trophies" aria-pressed="${vipShowTrophies}">🏆 TROFEJE</button><button class="vip-profile-toggle ${vipShowRanked ? 'active' : ''}" type="button" data-vip-stat="ranked" aria-pressed="${vipShowRanked}">RANKED</button></div><form class="vip-trophy-form" data-vip-trophy-form><label for="vipDisplayedTrophies">ZOBRAZENÉ VIP TROFEJE (0–999 999)</label><div><input id="vipDisplayedTrophies" name="trophies" type="number" min="0" max="999999" step="1" value="${vipDisplayedTrophies ?? totalTrophyCount()}" required><button class="vip-profile-toggle" type="submit">ULOŽIŤ</button><button class="vip-profile-toggle" type="button" data-vip-trophy-reset>SKUTOČNÉ</button></div></form><div class="vip-stat-preview">${displayedStats || '<span class="vip-stat-empty">ŽIADNE ÚDAJE NEZOBRAZUJEŠ</span>'}</div><p>VIP číslo je iba vzhľad profilu; skutočné trofeje a postup v hre sa nemenia. Toto zobrazenie je len v tomto prehliadači, hra zatiaľ nemá verejné profily.</p></section>`;
   }
   function renderSystemHub(tab = currentSystemTab) {
     currentSystemTab = tab;
@@ -464,6 +468,31 @@
       }
       renderSystemHub('profile');
     }));
+    systemContent.querySelector('[data-vip-trophy-form]')?.addEventListener('submit', event => {
+      event.preventDefault();
+      const input = event.currentTarget.elements.trophies;
+      const value = Number(input.value);
+      if (!Number.isSafeInteger(value) || value < 0 || value > 999999) {
+        input.setCustomValidity('Zadaj celé číslo od 0 do 999 999.');
+        input.reportValidity();
+        return;
+      }
+      input.setCustomValidity('');
+      vipDisplayedTrophies = value;
+      vipShowTrophies = true;
+      storage.set(vipDisplayedTrophiesKey, String(value));
+      storage.set(vipShowTrophiesKey, 'true');
+      renderSystemHub('profile');
+    });
+    systemContent.querySelector('#vipDisplayedTrophies')?.addEventListener('input', event => {
+      event.currentTarget.setCustomValidity('');
+    });
+    systemContent.querySelector('[data-vip-trophy-reset]')?.addEventListener('click', () => {
+      if (!vipUnlocked) return;
+      vipDisplayedTrophies = null;
+      storage.remove(vipDisplayedTrophiesKey);
+      renderSystemHub('profile');
+    });
     systemContent.querySelectorAll('[data-quick-map]').forEach(button => button.addEventListener('click', () => { chooseMap(button.dataset.quickMap); matchHint.textContent = `VYBRANÉ: ${getMapName()}.`; setPanelVisible(false); }));
     systemContent.querySelector('[data-open-mapmaker]')?.addEventListener('click', () => openMenuSection('mapmaker'));
     systemContent.querySelectorAll('[data-knockout]').forEach(button => button.addEventListener('click', () => startKnockout(button.dataset.knockout)));

@@ -145,6 +145,10 @@ h1 em { color: var(--cyan); font-style: normal; }
 .vip-profile-toggles, .vip-stat-preview { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
 .vip-profile-toggle { border: 1px solid rgba(255,255,255,.16); color: var(--muted); background: rgba(7,17,31,.7); padding: 6px 8px; cursor: pointer; font: 700 7px 'Space Mono', monospace; }
 .vip-profile-toggle:hover, .vip-profile-toggle.active { border-color: var(--yellow); color: var(--yellow); background: rgba(249,215,110,.1); }
+.vip-trophy-form { display: grid; gap: 5px; margin-top: 8px; }
+.vip-trophy-form label { color: var(--muted); font-size: 7px; }
+.vip-trophy-form > div { display: flex; flex-wrap: wrap; gap: 5px; }
+.vip-trophy-form input { width: 110px; border: 1px solid rgba(249,215,110,.3); color: var(--paper); background: rgba(7,17,31,.8); padding: 6px; font: 700 8px 'Space Mono', monospace; }
 .vip-stat { border: 1px solid rgba(249,215,110,.35); padding: 5px 7px; color: var(--yellow); font-size: 7px; }
 .vip-stat-empty { color: var(--muted); font-size: 7px; }
 .vip-profile-options p { margin: 7px 0 0; color: var(--muted); font-size: 7px; line-height: 1.5; }
